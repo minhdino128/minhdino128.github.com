@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* ========== TOÀN BỘ CSS (GIỮ NGUYÊN) ========== */
+        /* Giữ nguyên toàn bộ CSS (đã được tối ưu) */
         * {
             margin: 0;
             padding: 0;
@@ -425,8 +425,8 @@
         }
 
         .cell {
-            width: min(5vw, 60px);
-            height: min(5vw, 60px);
+            width: min(5vw, 80px);
+            height: min(5vw, 80px);
             min-width: 30px;
             min-height: 30px;
             background: #2d3557;
@@ -434,7 +434,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: min(3vw, 36px);
+            font-size: min(3vw, 48px);
             font-weight: bold;
             text-shadow: 2px 2px 0 #0d0f1f;
             box-shadow: 0 0 0 2px #1b2140 inset, 0 4px 0 #141827;
@@ -590,11 +590,13 @@
             font-size: 48px;
             margin-bottom: 20px;
             font-weight: 700;
+            text-align: center;
         }
 
         .overlay-box p {
             font-size: 24px;
             margin-bottom: 30px;
+            text-align: center;
         }
 
         .overlay-buttons {
@@ -669,6 +671,46 @@
             opacity: 0.5;
         }
 
+        .instructions-box {
+            background: #1a1f35;
+            border: 4px solid gold;
+            color: #ffefb0;
+            padding: 30px;
+            border-radius: 60px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            text-align: left;
+        }
+
+        .instructions-box h2 {
+            font-size: 36px;
+            color: gold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .instructions-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .instructions-box li {
+            margin: 15px 0;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .instructions-box li i {
+            color: gold;
+            font-size: 24px;
+            width: 40px;
+            text-align: center;
+        }
+
         @keyframes float {
             from { transform: translateY(0); }
             to { transform: translateY(-15px); }
@@ -701,7 +743,7 @@
         <div class="xo-item o">O</div>
     </div>
 
-    <!-- MÀN HÌNH CHÀO (không có intro) -->
+    <!-- MÀN HÌNH CHÀO -->
     <div id="welcome-screen" class="screen">
         <div class="glass-panel" style="text-align: center;">
             <h1>BATTLE CARO</h1>
@@ -709,6 +751,7 @@
             <button class="btn" id="startBtn">CHƠI NHANH</button>
             <button class="btn" id="campaignBtn" style="margin-top: 20px;">🗺️ CHIẾN DỊCH</button>
             <button class="btn" id="achievementsBtn" style="margin-top: 20px;">🏆 THÀNH TỰU</button>
+            <button class="btn" id="instructionsBtn" style="margin-top: 20px;">📖 HƯỚNG DẪN</button>
         </div>
     </div>
 
@@ -778,7 +821,7 @@
         </div>
     </div>
 
-    <!-- MÀN HÌNH GAME (dùng chung) -->
+    <!-- MÀN HÌNH GAME -->
     <div id="game-screen" class="screen hidden">
         <div class="game-layout">
             <div class="players-row">
@@ -832,6 +875,23 @@
                 <button class="overlay-btn" id="overlayStayBtn">XEM LẠI</button>
                 <button class="overlay-btn next-level-btn" id="overlayNextBtn" style="display: none;">MÀN TIẾP THEO</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Overlay hướng dẫn -->
+    <div id="instructionsOverlay" class="overlay">
+        <div class="instructions-box">
+            <h2>📖 HƯỚNG DẪN</h2>
+            <ul>
+                <li><i class="fas fa-hand-pointer"></i> Nhấp vào ô để đặt quân (X hoặc O).</li>
+                <li><i class="fas fa-clock"></i> Mỗi người có 5 phút, robot có thời gian vô hạn.</li>
+                <li><i class="fas fa-trophy"></i> Thắng khi đủ số quân liên tiếp (3/5/7 tùy chế độ).</li>
+                <li><i class="fas fa-robot"></i> AI có 3 độ khó: Dễ, Trung bình, Khó.</li>
+                <li><i class="fas fa-map"></i> Chiến dịch: Hoàn thành các map để mở khóa map ẩn.</li>
+                <li><i class="fas fa-star"></i> Đạt thành tựu để nhận huy hiệu.</li>
+                <li><i class="fas fa-undo-alt"></i> Có thể quay lại menu hoặc chơi lại bất cứ lúc nào.</li>
+            </ul>
+            <button class="btn" id="closeInstructionsBtn" style="margin-top: 20px;">ĐÓNG</button>
         </div>
     </div>
 
@@ -956,6 +1016,40 @@
                 { id: 'perfect', name: 'Hoàn hảo', desc: 'Thắng mà không để đối thủ đặt quân nào.', icon: '💯', unlocked: false }
             ];
 
+            // ==================== LOAD & SAVE GAME DATA ====================
+            // Hàm lưu dữ liệu vào localStorage
+            function saveGameData() {
+                const data = {
+                    completedLevels: completedLevels,
+                    achievements: achievements.map(ach => ({ ...ach })) // copy để tránh tham chiếu
+                };
+                localStorage.setItem('battleCaro', JSON.stringify(data));
+            }
+
+            // Hàm tải dữ liệu từ localStorage
+            function loadGameData() {
+                const saved = localStorage.getItem('battleCaro');
+                if (saved) {
+                    try {
+                        const data = JSON.parse(saved);
+                        // Gán lại completedLevels
+                        if (data.completedLevels) {
+                            completedLevels = data.completedLevels;
+                        }
+                        // Gán lại achievements (chỉ lấy unlocked flag, giữ nguyên cấu trúc)
+                        if (data.achievements && Array.isArray(data.achievements)) {
+                            for (let i = 0; i < achievements.length; i++) {
+                                if (data.achievements[i] && data.achievements[i].unlocked !== undefined) {
+                                    achievements[i].unlocked = data.achievements[i].unlocked;
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        console.warn('Lỗi đọc dữ liệu', e);
+                    }
+                }
+            }
+
             // ==================== BIẾN TOÀN CỤC ====================
             const avatarListX = [
                 '⚔️', '🛡️', '🗡️', '🏹', '🔮', '⚰️', '⚱️', '💀', '👑', '🎭',
@@ -986,6 +1080,9 @@
             let currentLevelId = 0;
             let completedLevels = {};
 
+            // Load dữ liệu đã lưu
+            loadGameData();
+
             // DOM elements
             const welcomeScreen = document.getElementById('welcome-screen');
             const modeScreen = document.getElementById('mode-screen');
@@ -994,10 +1091,13 @@
             const campaignMapScreen = document.getElementById('campaign-map-screen');
             const campaignLevelScreen = document.getElementById('campaign-level-screen');
             const gameScreen = document.getElementById('game-screen');
+            const instructionsOverlay = document.getElementById('instructionsOverlay');
 
             const startBtn = document.getElementById('startBtn');
             const campaignBtn = document.getElementById('campaignBtn');
             const achievementsBtn = document.getElementById('achievementsBtn');
+            const instructionsBtn = document.getElementById('instructionsBtn');
+            const closeInstructionsBtn = document.getElementById('closeInstructionsBtn');
             const modePVP = document.getElementById('modePVP');
             const modePVAI = document.getElementById('modePVAI');
             const win3 = document.getElementById('win3');
@@ -1088,8 +1188,9 @@
 
             // ==================== THÀNH TỰU ====================
             function checkAchievements(winner, timeLeft, moves) {
-                if (!achievements[0].unlocked && winner === 'X') achievements[0].unlocked = true;
-                if (timeX >= 240 && !achievements[1].unlocked) achievements[1].unlocked = true;
+                let changed = false;
+                if (!achievements[0].unlocked && winner === 'X') { achievements[0].unlocked = true; changed = true; }
+                if (timeX >= 240 && !achievements[1].unlocked) { achievements[1].unlocked = true; changed = true; }
                 if (mode === 'campaign') {
                     let mapLevels = levelsData[currentMapId];
                     let allCompleted = true;
@@ -1097,16 +1198,17 @@
                         if (!completedLevels[`${currentMapId}_${i}`]) { allCompleted = false; break; }
                     }
                     if (allCompleted) {
-                        if (currentMapId === 0) achievements[2].unlocked = true;
-                        if (currentMapId === 1) achievements[3].unlocked = true;
-                        if (currentMapId === 2) achievements[4].unlocked = true;
-                        if (currentMapId === 3) achievements[5].unlocked = true;
-                        if (currentMapId === 4) achievements[6].unlocked = true;
-                        if (currentMapId === 5) achievements[7].unlocked = true;
+                        if (currentMapId === 0 && !achievements[2].unlocked) { achievements[2].unlocked = true; changed = true; }
+                        if (currentMapId === 1 && !achievements[3].unlocked) { achievements[3].unlocked = true; changed = true; }
+                        if (currentMapId === 2 && !achievements[4].unlocked) { achievements[4].unlocked = true; changed = true; }
+                        if (currentMapId === 3 && !achievements[5].unlocked) { achievements[5].unlocked = true; changed = true; }
+                        if (currentMapId === 4 && !achievements[6].unlocked) { achievements[6].unlocked = true; changed = true; }
+                        if (currentMapId === 5 && !achievements[7].unlocked) { achievements[7].unlocked = true; changed = true; }
                     }
                 }
-                if (winner === 'X' && moveHistory.length === 1) achievements[8].unlocked = true;
+                if (winner === 'X' && moveHistory.length === 1 && !achievements[8].unlocked) { achievements[8].unlocked = true; changed = true; }
                 renderAchievements();
+                if (changed) saveGameData();
             }
 
             function renderAchievements() {
@@ -1379,6 +1481,7 @@
                     if (mode === 'campaign' && currentPlayer === 'X') {
                         completedLevels[`${currentMapId}_${currentLevelId}`] = true;
                         checkAchievements('X', timeX, moveHistory.length);
+                        saveGameData(); // lưu ngay khi hoàn thành level
                     }
                     return true;
                 }
@@ -1735,6 +1838,14 @@
                 welcomeScreen.classList.add('hidden');
                 achievementsScreen.classList.remove('hidden');
                 renderAchievements();
+            });
+
+            instructionsBtn.addEventListener('click', () => {
+                instructionsOverlay.classList.add('show');
+            });
+
+            closeInstructionsBtn.addEventListener('click', () => {
+                instructionsOverlay.classList.remove('show');
             });
 
             modePVP.addEventListener('click', () => {
